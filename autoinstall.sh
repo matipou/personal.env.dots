@@ -2,6 +2,10 @@
 
 set -e
 
+rm -rf ~/.config/nvim
+
+rm -rf ~/.local/share/nvim
+
 # Define colors for output using tput for better compatibility
 PINK=$(tput setaf 204)
 PURPLE=$(tput setaf 141)
