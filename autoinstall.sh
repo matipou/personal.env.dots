@@ -66,7 +66,7 @@ install_apps() {
     ghostty
     firefox
     obsidian
-    spotify
+    spotify-launcher
     obs-studio
     rofi
   )
@@ -89,7 +89,7 @@ fi
 
 git clone "https://github.com/matipou/personal.env.dots.git" "personal.env.dots"
 
-cd personal.evn.dots || exit
+cd personal.env.dots || exit
 
 # Function to install a terminal emulator with progress
 echo -e "${YELLOW}Installing and configuring terminal emulator...${NC}"
