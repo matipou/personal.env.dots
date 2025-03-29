@@ -75,7 +75,7 @@ install_apps() {
   sudo pacman -S --needed --noconfirm "${appsPackages[@]}"
 }
 
-install_dependencies
+install_starter_packages
 
 install_apps
 
