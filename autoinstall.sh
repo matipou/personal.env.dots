@@ -33,7 +33,7 @@ install_starter_packages() {
   sudo pacman -S --needed --noconfirm base-devel curl file wget ruby-erb nano
 
   # Yay install
-  git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si
+  sudo pacman -S --needed git base-devel && git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si
 
   # Homebrew install
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
