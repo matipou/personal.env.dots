@@ -139,8 +139,8 @@ brew install powerlevel10k
 
 # Step 5: Additional Configurations
 echo -e "${YELLOW}Step 4: Configuring Hyprland${NC}"
-cp -rf ./zprofile/.zprofile ~/
-cp -rf ./Hyprland/* ~/config/hypr
+cp -rf zprofile/.zprofile ~/
+cp -rf Hyprland/* ~/config/hypr
 
 # Neovim Configuration
 echo -e "${YELLOW}Step 5: Installing NVIM${NC}"
