@@ -39,6 +39,7 @@ install_starter_packages() {
 
   echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >>~/.bashrc
   eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+  export PATH=/home/linuxbrew/.linuxbrew/bin:$PATH
   brew install gcc
 }
 
@@ -54,7 +55,7 @@ install_apps() {
     sddm
   )
 
-  echo "Installing gnome display manager packages"
+  echo "Installing hyprland packages"
   sudo pacman -Syu --needed --noconfirm "${wmpackages[@]}"
 
   yay -S ags-hyprpanel-git
