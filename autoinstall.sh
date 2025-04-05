@@ -56,7 +56,6 @@ install_apps() {
 
   echo "Installing gnome display manager packages"
   sudo pacman -Syu --needed --noconfirm "${wmpackages[@]}"
-  sudo systemctl enable gdm.service
 
   yay -S ags-hyprpanel-git
   sudo pacman -S --needed wireplumber libgtop bluez bluez-utils btop networkmanager dart-sass wl-clipboard brightnessctl swww python upower pacman-contrib power-profiles-daemon gvfs wf-recorder
