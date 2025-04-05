@@ -7,13 +7,9 @@ rm -rf ~/.config/nvim
 rm -rf ~/.local/share/nvim
 
 # Define colors for output using tput for better compatibility
-PINK=$(tput setaf 204)
 PURPLE=$(tput setaf 141)
 GREEN=$(tput setaf 114)
-ORANGE=$(tput setaf 208)
-BLUE=$(tput setaf 75)
 YELLOW=$(tput setaf 221)
-RED=$(tput setaf 196)
 NC=$(tput sgr0) # No Color
 
 echo -e "${PURPLE}Mati Pou Arch Env. - Auto Config!${NC}"
@@ -35,10 +31,12 @@ install_starter_packages() {
   # Yay install
   sudo pacman -S --needed git base-devel && git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si
 
+  yay -Y --gendb
+  yay -Y --devel --save
+
   # Homebrew install
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-  . $HOME/.cargo/env
+  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh . $HOME/.cargo/env
 
   echo >>~/.bashrc
   echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >>~/.bashrc
@@ -47,19 +45,20 @@ install_starter_packages() {
 }
 
 install_apps() {
-  gdmpackages=(
-    gdm
-    gnome-calculator
-    nautilus
-    gnome-menus
-    gnome-control-center
-    gnome-session
-    xdg-desktop-portal-gnome
-    xdg-desktop-portal
+  wmpackages=(
+    hyprland
+    hyprpanel
+    waybar
+    pavucontrol
+    uwsm
+    xdg-desktop-portal-gtk
+    xdg-desktop-portal-hyprland
+    wl-clipboard
+    sddm
   )
 
   echo "Installing gnome display manager packages"
-  sudo pacman -S --needed --noconfirm "${gdmpackages[@]}"
+  sudo pacman -Syu --needed --noconfirm "${wmpackages[@]}"
   sudo systemctl enable gdm.service
 
   appsPackages=(
@@ -69,10 +68,20 @@ install_apps() {
     spotify-launcher
     obs-studio
     rofi
+    bat
   )
 
   echo "Installing app packages"
   sudo pacman -S --needed --noconfirm "${appsPackages[@]}"
+
+  toolsPackages=(
+    lsd
+    fzf
+  )
+
+  echo "Installing app packages"
+  sudo brew install "${toolsPackages[@]}"
+
 }
 
 install_starter_packages
@@ -129,14 +138,15 @@ echo -e "${YELLOW}Configuring PowerLevel10K...${NC}"
 brew install powerlevel10k
 
 # Step 5: Additional Configurations
-
-echo -e "${YELLOW}Step 4: Installing Zellij Window Manager${NC}"
+echo -e "${YELLOW}Step 4: Configuring Hyprland${NC}"
+cp -rf ./zprofile/.zprofile ~/
+cp -rf ./Hyprland/* ~/config/hypr
 
 # Neovim Configuration
 echo -e "${YELLOW}Step 5: Installing NVIM${NC}"
 
 # Install additional packages with Neovim
-brew install nvim node npm git gcc fzf fd ripgrep coreutils bat curl lazygit
+brew install nvim node npm git gcc fd ripgrep coreutils bat curl lazygit
 
 # Neovim Configuration
 echo -e "${YELLOW}Configuring Neovim...${NC}"
