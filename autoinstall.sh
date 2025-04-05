@@ -36,10 +36,8 @@ install_starter_packages() {
 
   # Homebrew install
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh . $HOME/.cargo/env
 
-  echo >>~/.bashrc
-  echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >>~/.bashrc
+  echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >>~/.zshrc
   eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
   brew install gcc
 }
