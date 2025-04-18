@@ -1,40 +1,39 @@
 #!/bin/bash
-
 set -e
 
-rm -rf ~/.config/nvim
+# Color definition
+NO_FORMAT="\033[0m"
+F_BOLD="\033[1m"
+F_UNDERLINED="\033[4m"
+C_CORNFLOWERBLUE="\033[38;5;69m"
+echo -e "${F_BOLD}${F_UNDERLINED}${C_CORNFLOWERBLUE}Auto environment instalation starting... - Arch linux${NO_FORMAT}"
 
-rm -rf ~/.local/share/nvim
+# Controlated exit
+ctrl_c() {
+  echo -e "${F_BOLD}${C_CORNFLOWERBLUE}\n\n [!] Leaving...${NO_FORMAT} \n"
+  exit 1
+}
 
-# Define colors for output using tput for better compatibility
-PURPLE=$(tput setaf 141)
-GREEN=$(tput setaf 114)
-YELLOW=$(tput setaf 221)
-NC=$(tput sgr0) # No Color
+# Ctrol + C
+trap ctrl_c INT
 
-echo -e "${PURPLE}Mati Pou Arch Env. - Auto Config!${NC}"
-
-sudo -v
-
-while true; do
-  sudo -n true
-  sleep 60
-  kill -0 "$$" || exit
-done 2>/dev/null &
-
-install_starter_packages() {
-  echo -e "${YELLOW}Installing starter packages...${NC}"
+install_dependecies_packages() {
+  echo -e "${F_BOLD}${C_CORNFLOWERBLUE}\n\n [+] Instaling dependencies. ${NO_FORMAT} \n"
 
   sudo pacman -Syu --noconfirm
-  sudo pacman -S --needed --noconfirm base-devel curl file wget ruby-erb nano
+  sudo pacman -S --needed --noconfirm base-devel curl file wget ruby-erb nano git
+}
 
+install_packages_managers() {
   # Yay install
-  sudo pacman -S --needed git base-devel && git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si
+  echo -e "${F_BOLD}${C_CORNFLOWERBLUE}\n\n [+] Instaling yay packages manager. ${NO_FORMAT} \n"
+  git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si
 
   yay -Y --gendb
   yay -Y --devel --save
 
   # Homebrew install
+  echo -e "${F_BOLD}${C_CORNFLOWERBLUE}\n\n [+] Instaling Homebrew packages manager. ${NO_FORMAT} \n"
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
@@ -46,122 +45,220 @@ install_starter_packages() {
   brew install gcc
 }
 
-install_apps() {
-  wmpackages=(
+install_windows_manager_packages() {
+  pacmanPackages=(
     hyprland
     waybar
-    pavucontrol
-    uwsm
     xdg-desktop-portal-gtk
     xdg-desktop-portal-hyprland
-    wl-clipboard
-    sddm
   )
 
-  echo "Installing hyprland packages"
-  sudo pacman -Syu --needed --noconfirm "${wmpackages[@]}"
+  echo -e "${F_BOLD}${C_CORNFLOWERBLUE}\n\n [+] Installing windows manager packages ~ Hyperland ${NO_FORMAT} \n"
+  sudo pacman -Syu --needed --noconfirm "${pacmanPackages[@]}"
+}
 
-  yay -S ags-hyprpanel-git
-  sudo pacman -S --needed wireplumber libgtop bluez bluez-utils btop networkmanager dart-sass wl-clipboard brightnessctl swww python upower pacman-contrib power-profiles-daemon gvfs wf-recorder
+install_system_utilities_packages() {
+  pacmanPackages=(
+    pavucontrol
+    uwsm
+    wl-clipboard
+    sddm
+    blueman
+    bluez
+    bluez-utils
+    duf
+    wireplumber
+    libgtop
+    networkmanager
+  )
 
-  appsPackages=(
+  aurPackages=(
+    grim
+    slurp
+  )
+
+  echo -e "${F_BOLD}${C_CORNFLOWERBLUE}\n\n [+] Installing system utilities packages${NO_FORMAT} \n"
+
+  sudo pacman -Syu --needed --noconfirm "${pacmanPackages[@]}"
+
+  yay "${aurPackages}"
+}
+
+enable_system_services() {
+  sudo systemctl enable bluetooth.service
+}
+
+install_apps_packages() {
+  pacmanPackages=(
     ghostty
     firefox
     obsidian
-    spotify-launcher
     obs-studio
+  )
+
+  brewPackages=(
+    zsh
+    carapace
+    zoxide
+    atuin
+    zsh-autosuggestions
+    zsh-syntax-highlighting
+    zsh-autocomplete
+    powerlevel10k
+    nvim
+    node
+    npm
+    gcc
+    fd
+    ripgrep
+    coreutils
+    lazygit
+  )
+
+  aurPackages=(
+    tidal-hifi-bin-5.18.2-1
+  )
+
+  echo -e "${F_BOLD}${C_CORNFLOWERBLUE}\n\n [+] Installing apps packages${NO_FORMAT} \n"
+
+  sudo pacman -Syu --needed --noconfirm "${pacmanPackages[@]}"
+
+  yay "${aurPackages[@]}"
+
+  brew install "${brewPackages[@]}"
+}
+
+install_tools_packages() {
+  pacmanPackages=(
     rofi
     bat
   )
 
-  echo "Installing app packages"
-  sudo pacman -S --needed --noconfirm "${appsPackages[@]}"
-
-  toolsPackages=(
+  brewPackages=(
     lsd
     fzf
   )
 
-  echo "Installing app packages"
-  sudo brew install "${toolsPackages[@]}"
+  echo -e "${F_BOLD}${C_CORNFLOWERBLUE}\n\n [+] Installing tools packages${NO_FORMAT} \n"
 
+  sudo pacman -Syu --needed --noconfirm "${pacmanPackages[@]}"
+
+  brew install --cask "${brewPackages[@]}"
 }
 
-install_starter_packages
+install_packages() {
+  echo -e "${F_BOLD}${C_CORNFLOWERBLUE}\n\n [+] Installing packages${NO_FORMAT} \n"
 
-install_apps
+  install_dependecies_packages
+  install_packages_managers
+  install_system_utilities_packages
+  enable_system_services
+  install_windows_manager_packages
+  install_apps_packages
+  install_tools_packages
+}
 
-# Step 1: Clone the Repository
-echo -e "${YELLOW}Step 1: Clone the Repository${NC}"
+remove_old_config_files() {
+  echo -e "${F_BOLD}${C_CORNFLOWERBLUE}\n\n [+] Removing old config files. ${NO_FORMAT} \n"
 
-if [ -d "personal.env.dots" ]; then
-  echo -e "${GREEN}Repository already cloned. Overwriting...${NC}"
-  rm -rf "personal.env.dots"
-fi
+  rm -rf ~/.config/nvim
+  rm -rf ~/.local/share/nvim
+}
 
-git clone "https://github.com/matipou/personal.env.dots.git" "personal.env.dots"
+clone_dotfiles_repository() {
+  echo -e "${F_BOLD}${C_CORNFLOWERBLUE}\n\n [+] Cloning dot files repository ... ${NO_FORMAT} \n"
 
-cd personal.env.dots || exit
+  if [ -d "personal.env.dots" ]; then
+    rm -rf "personal.env.dots"
+  fi
 
-# Function to install a terminal emulator with progress
-echo -e "${YELLOW}Installing and configuring terminal emulator...${NC}"
+  git clone "https://github.com/matipou/personal.env.dots.git" "personal.env.dots"
 
-if ! command -v ghostty &>/dev/null; then
-  pacman -S ghostty
+  cd personal.env.dots || exit
+}
+
+config_terminal_emulator() {
+  echo -e "${F_BOLD}${C_CORNFLOWERBLUE}\n\n [+] Configuring terminal emulator ~ Ghostty ${NO_FORMAT} \n"
   mkdir -p ~/.config/ghostty && cp -r TerminalEmulators/Ghostty/* ~/.config/ghostty
-fi
+}
 
-echo -e "${YELLOW}Installing Iosevka Term Nerd Font...${NC}"
-mkdir -p ~/.local/share/fonts
-wget -O ~/.local/share/fonts/IosevkaTerm.zip https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/IosevkaTerm.zip
-unzip ~/.local/share/fonts/IosevkaTerm.zip -d ~/.local/share/fonts/
-fc-cache -fv
-echo -e "${GREEN}Iosevka Term Nerd Font installed.${NC}"
+config_font() {
+  echo -e "${F_BOLD}${C_CORNFLOWERBLUE}\n\n [+] Installing Iosevka Term Nerd Font ${NO_FORMAT} \n"
+  mkdir -p ~/.local/share/fonts
+  wget -O ~/.local/share/fonts/IosevkaTerm.zip https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/IosevkaTerm.zip
+  unzip ~/.local/share/fonts/IosevkaTerm.zip -d ~/.local/share/fonts/
+  fc-cache -fv
+}
+
+config_shell() {
+  echo -e "${F_BOLD}${C_CORNFLOWERBLUE}\n\n [+] Configuring shell ~ zsh ${NO_FORMAT} \n"
+  mkdir -p ~/.cache/carapace
+  mkdir -p ~/.local/share/atuin
+
+  cp -rf Shells/Zsh/.zshrc ~/
+  cp -rf Shells/Zsh/.p10k.zsh ~/
+
+  chown -R $(whoami) $(brew --prefix)/*
+}
 
 set_as_default_shell() {
+  echo -e "${F_BOLD}${C_CORNFLOWERBLUE}\n\n [+] Setting zsh as default shell ${NO_FORMAT} \n"
   command -v zsh | sudo tee -a /etc/shells
   sudo chsh -s $(which zsh) $USER
 }
 
-# installing zsh
-brew install zsh carapace zoxide atuin
+config_windows_manager() {
+  echo -e "${F_BOLD}${C_CORNFLOWERBLUE}\n\n [+] Configuring window manager ~ Hyprland ${NO_FORMAT} \n"
+  cp -rf zprofile/.zprofile ~/
+  cp -rf Hyprland/* ~/config/hypr
+}
 
-brew install zsh-autosuggestions zsh-syntax-highlighting zsh-autocomplete
+config_nvim() {
+  echo -e "${F_BOLD}${C_CORNFLOWERBLUE}\n\n [+] Configuring NVIM ${NO_FORMAT} \n"
+  mkdir -p ~/.config/nvim
+  cp -r Nvim/* ~/.config/nvim/
+}
 
-echo -e "${YELLOW}Configuring Zsh...${NC}"
+remove_cloned_repository() {
+  echo -e "${YELLOW}Cleaning up...${NC}"
+  cd ..
+  rm -rf personal.env.dots
+}
 
-mkdir -p ~/.cache/carapace
-mkdir -p ~/.local/share/atuin
+install_cursor_theme() {
 
-cp -rf Shells/Zsh/.zshrc ~/
-cp -rf Shells/Zsh/.p10k.zsh ~/
+  USER_DIR="$HOME/.local/share/icons"
 
-# PowerLevel10K Configuration
-echo -e "${YELLOW}Configuring PowerLevel10K...${NC}"
-brew install powerlevel10k
+  if [ -d "$USER_DIR/Vimix-cursors" ]; then
+    rm -rf "$USER_DIR/Vimix-cursors"
+  fi
 
-# Step 5: Additional Configurations
-echo -e "${YELLOW}Step 4: Configuring Hyprland${NC}"
-cp -rf zprofile/.zprofile ~/
-cp -rf Hyprland/* ~/config/hypr
+  if [ -d "$USER_DIR/Vimix-white-cursors" ]; then
+    rm -rf "$USER_DIR/Vimix-white-cursors"
+  fi
 
-# Neovim Configuration
-echo -e "${YELLOW}Step 5: Installing NVIM${NC}"
+  cp -r CursorTheme/DarkTheme/ "$USER_DIR"/Vimix-cursors
+  cp -r CursorTheme/WhiteTheme/ "$USER_DIR"/Vimix-white-cursors
+}
 
-# Install additional packages with Neovim
-brew install nvim node npm git gcc fd ripgrep coreutils bat curl lazygit
+load_configs() {
+  remove_old_config_files
+  clone_dotfiles_repository
+  config_windows_manager
+  config_terminal_emulator
+  config_font
+  config_shell
+  config_nvim
+  remove_cloned_repository
+  install_cursor_theme
+}
 
-# Neovim Configuration
-echo -e "${YELLOW}Configuring Neovim...${NC}"
-mkdir -p ~/.config/nvim
-cp -r Nvim/* ~/.config/nvim/
+#
+#Main flow:
+#
 
-# Clean up: Remove the cloned repository
-chown -R $(whoami) $(brew --prefix)/*
-echo -e "${YELLOW}Cleaning up...${NC}"
-cd ..
-rm -rf personal.env.dots
+install_packages
 
-set_as_default_shell
+load_configs
 
-echo -e "${GREEN}Configuration complete. Please restart shell...${NC}"
+echo -e "${F_BOLD}${C_CORNFLOWERBLUE}\n\n [+] Configuration complete. Please reboot system...${NO_FORMAT} \n"
