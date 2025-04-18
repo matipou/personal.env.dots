@@ -254,8 +254,8 @@ load_configs() {
   config_font
   config_shell
   config_nvim
-  remove_cloned_repository
   install_cursor_theme
+  remove_cloned_repository
 }
 
 #
