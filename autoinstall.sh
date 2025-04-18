@@ -238,7 +238,7 @@ install_cursor_theme() {
     rm -rf "$USER_DIR/Vimix-white-cursors"
   fi
 
-  mkdir "$USER_DIR"/icons
+  mkdir "$USER_DIR"
   mkdir "$USER_DIR"/Vimix-cursors
   mkdir "$USER_DIR"/Vimix-white-cursors
 
