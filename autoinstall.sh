@@ -209,8 +209,10 @@ set_as_default_shell() {
 
 config_windows_manager() {
   echo -e "${F_BOLD}${C_CORNFLOWERBLUE}\n\n [+] Configuring window manager ~ Hyprland ${NO_FORMAT} \n"
+
+  mkdir ~/.config/hypr
   cp -rf zprofile/.zprofile ~/
-  cp -rf Hyprland/* ~/config/hypr
+  cp -rf Hyprland/* ~/.config/hypr
 }
 
 config_nvim() {
