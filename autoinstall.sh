@@ -81,7 +81,7 @@ install_system_utilities_packages() {
 
   sudo pacman -Syu --needed --noconfirm "${pacmanPackages[@]}"
 
-  yay "${aurPackages}"
+  yay "${aurPackages[@]}"
 }
 
 enable_system_services() {
@@ -143,7 +143,7 @@ install_tools_packages() {
 
   sudo pacman -Syu --needed --noconfirm "${pacmanPackages[@]}"
 
-  brew install --cask "${brewPackages[@]}"
+  brew install "${brewPackages[@]}"
 }
 
 install_packages() {
